@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeFragment">
+
+
+    <TextView
+        android:id="@+id/text_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.758" />
+
+    <ImageView
+        android:id="@+id/showImage_Login"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/ic_launcher"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/home_tv_1"
+        android:layout_width="180dp"
+        android:layout_height="32dp"
+        app:layout_constraintLeft_toRightOf="@id/showImage_Login"
+        tools:layout_editor_absoluteY="27dp"></TextView>
+
+    <EditText
+        android:id="@+id/home_ET_1"
+        android:layout_width="228dp"
+        android:layout_height="39dp"
+        app:layout_constraintLeft_toRightOf="@id/showImage_Login"
+        app:layout_constraintTop_toBottomOf="@id/home_tv_1"></EditText>
+
+    <TextView
+        android:id="@+id/home_tv_2"
+        android:layout_width="228dp"
+        android:layout_height="39dp"
+        app:layout_constraintLeft_toRightOf="@id/showImage_Login"
+        app:layout_constraintTop_toBottomOf="@id/home_tv_1"></TextView>
+
+    <Button
+        android:id="@+id/Edit_Informatiom"
+        android:layout_width="224dp"
+        android:layout_height="42dp"
+        android:background="@color/teal_700"
+        android:text="Edit Informatiom"
+        app:layout_constraintBottom_toBottomOf="@id/showImage_Login"
+        app:layout_constraintLeft_toRightOf="@id/showImage_Login"/>
+
+    <Button
+        android:id="@+id/LIST_LECTURES"
+        android:layout_width="413dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="64dp"
+        android:background="@color/teal_700"
+        android:text="LIST OF LECTURES"
+        app:layout_constraintTop_toBottomOf="@id/showImage_Login"
+        tools:layout_editor_absoluteX="0dp"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/MY_LECTURES"
+        android:layout_width="410dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="44dp"
+        android:background="@color/teal_700"
+        android:text="MY LECTURES"
+        app:layout_constraintTop_toBottomOf="@id/LIST_LECTURES"
+        tools:layout_editor_absoluteX="0dp"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/LOGIN_OUT"
+        android:layout_width="410dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="44dp"
+        android:background="@color/teal_700"
+        android:text="LOGIN_OUT"
+        app:layout_constraintTop_toBottomOf="@id/MY_LECTURES"
+        tools:layout_editor_absoluteX="0dp"
+        tools:ignore="MissingConstraints" />
+</androidx.constraintlayout.widget.ConstraintLayout>

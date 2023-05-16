@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Education Support</string>
+    <string name="title_home">Profile</string>
+    <string name="title_dashboard">Home</string>
+    <string name="title_notifications">My Course</string>
+    <string name="register_success">You are registered successfully!</string>
+    <string name="add_information_success">You are add information successfully!</string>
+    <string name="register_failed">You are registered failed!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
