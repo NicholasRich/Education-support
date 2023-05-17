@@ -154,7 +154,7 @@ class NotificationsFragment : Fragment() {
 
     private fun submit(courseName: String) {
         val email = FirebaseAuth.getInstance().currentUser?.email.toString()
-        val course = Course(null, courseName, email, Date())
+        val course = Course(null, courseName, email)
         val db = Firebase.firestore
         db.collection("Course").add(course).addOnSuccessListener {
             Toast.makeText(

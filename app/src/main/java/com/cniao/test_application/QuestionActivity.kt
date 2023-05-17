@@ -110,7 +110,7 @@ class QuestionActivity : AppCompatActivity() {
                 answerList.add(Answer(null, id, editText.text.toString(), checkbox.isChecked))
             }
         }
-        val question = Question(null, id, questionDesc, number)
+        val question = Question(null, id, questionDesc)
         val db = Firebase.firestore
         db.collection("Question").add(question)
             .addOnSuccessListener {
