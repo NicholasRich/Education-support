@@ -153,6 +153,7 @@ class DashboardFragment : Fragment() {
                 val intent = Intent(requireActivity(), StudentActivity::class.java)
                 intent.putExtra("course_id", course.id)
                 intent.putExtra("course_name", course.course_name)
+                intent.putExtra("isEducator", isEducator)
                 startActivity(intent)
             } else {
                 selectCourse(course.id.toString(), course.course_name)

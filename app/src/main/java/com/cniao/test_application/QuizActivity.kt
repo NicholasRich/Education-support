@@ -10,14 +10,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import com.cniao.test_application.entity.Result
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
 
 
 class QuizActivity : AppCompatActivity() {
     private var userEmail: String? = null
+    private var activityId: String? = null
     private var activityName: String? = null
+    private var available_time: String? = null
 
     //declare options RelativeLayout
     private var option1Layout: RelativeLayout? = null
@@ -63,18 +67,17 @@ class QuizActivity : AppCompatActivity() {
         supportActionBar?.title = "Quiz"
 
         userEmail = intent.getStringExtra("userEmail")
-//        if (userEmail!!.contains("@")) {
-//            userEmail = userEmail!!.substring(0, userEmail!!.indexOf("@"))
-//        }
-        activityName = intent.getStringExtra("activityName")
-
+        activityName = intent.getStringExtra("activity_name")
+        available_time = intent.getStringExtra("available_time")
+        activityId = intent.getStringExtra("activity_id")
+        val dateFormat = SimpleDateFormat("MM/dd/yyyy HH:mm")
+        val datetime = dateFormat.parse(available_time)
         //init elements
         initElements()
 
 
         val db = Firebase.firestore
-        db.collection("Activity").document(activityName!!).collection("questions")
-            .get()
+        db.collection("Activity").document(activityId!!).collection("questions").get()
             .addOnSuccessListener { result ->
                 for (document in result) {
                     val questionDesc = document.data["question"]
@@ -107,8 +110,7 @@ class QuizActivity : AppCompatActivity() {
 
                 //select first question by default
                 selectQuestion(currentQuestionPosition)
-            }
-            .addOnFailureListener { exception ->
+            }.addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting documents.", exception)
             }
 
@@ -207,13 +209,12 @@ class QuizActivity : AppCompatActivity() {
 //                    .setValue(userSelectedStr)
 
                 val resultRef =
-                    db.collection("Result").document(activityName!!).collection(userEmail!!)
+                    db.collection("Result").document(activityId!!).collection(userEmail!!)
                         .document("answer")
 
                 val data = hashMapOf(
                     questionNum to userSelectedStr
                 )
-
                 resultRef.set(data as Map<String, Any>, SetOptions.merge())
                     .addOnSuccessListener { Log.d(TAG, "DocumentSnapshot successfully written!") }
                     .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
@@ -229,6 +230,8 @@ class QuizActivity : AppCompatActivity() {
                 if (currentQuestionPosition < questionsLists.size) {
                     selectQuestion(currentQuestionPosition)
                 } else {
+                    db.collection("Result")
+                        .add(Result(activityId!!, activityName!!, userEmail!!, datetime))
                     finishQuiz()
                 }
             }
@@ -257,7 +260,7 @@ class QuizActivity : AppCompatActivity() {
     private fun finishQuiz() {
         val intent = Intent(this@QuizActivity, QuizResultActivity::class.java)
         intent.putExtra("userEmail", userEmail)
-        intent.putExtra("activityName", activityName)
+        intent.putExtra("activityName", activityId)
         startActivity(intent)
     }
 
@@ -293,8 +296,7 @@ class QuizActivity : AppCompatActivity() {
     }
 
     private fun selectOption(
-        selectedOptionLayout: RelativeLayout?,
-        selectedOptionIcon: ImageView?
+        selectedOptionLayout: RelativeLayout?, selectedOptionIcon: ImageView?
     ) {
         val answerSize = questionsLists[currentQuestionPosition].answer.size
         //if one answer set resource
@@ -306,8 +308,7 @@ class QuizActivity : AppCompatActivity() {
     }
 
     private fun removeOption(
-        selectedOptionLayout: RelativeLayout?,
-        selectedOptionIcon: ImageView?
+        selectedOptionLayout: RelativeLayout?, selectedOptionIcon: ImageView?
     ) {
         selectedOptionLayout!!.setBackgroundResource(R.drawable.option_bg)
         selectedOptionIcon!!.setImageResource(R.drawable.option_bg)

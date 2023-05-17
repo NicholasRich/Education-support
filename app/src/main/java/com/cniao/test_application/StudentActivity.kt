@@ -27,7 +27,7 @@ class StudentActivity : AppCompatActivity() {
         val courseId = intent.getStringExtra("course_id").toString()
         val courseName = intent.getStringExtra("course_name").toString()
         findViewById<TextView>(R.id.courseName).text = courseName
-        findStudentByCourseId(courseId)
+        findStudentByCourseId(courseId, courseName)
         val addList = mutableListOf<String>()
         findViewById<Button>(R.id.addStudent).setOnClickListener {
             addList.clear()
@@ -99,7 +99,7 @@ class StudentActivity : AppCompatActivity() {
     }
 
 
-    private fun findAllStudent(emailList: List<String>) {
+    private fun findAllStudent(emailList: List<String>, courseId: String, courseName: String) {
         val db = Firebase.firestore
         db.collection("users").whereEqualTo("identity", "Learner").get()
             .addOnSuccessListener { result ->
@@ -110,13 +110,18 @@ class StudentActivity : AppCompatActivity() {
                     val email1 = documents[index++].data?.get("email").toString()
                     if (documents.size == 1) {
                         addStudentCheckBox(
-                            email1, "", haveEmail(email1, emailList), false
+                            email1, "", haveEmail(email1, emailList), false, courseId, courseName
                         )
                         break
                     }
                     val email2 = documents[index++].data?.get("email").toString()
                     addStudentCheckBox(
-                        email1, email2, haveEmail(email1, emailList), haveEmail(email2, emailList)
+                        email1,
+                        email2,
+                        haveEmail(email1, emailList),
+                        haveEmail(email2, emailList),
+                        courseId,
+                        courseName
                     )
                 }
 
@@ -134,7 +139,7 @@ class StudentActivity : AppCompatActivity() {
         return false
     }
 
-    private fun findStudentByCourseId(courseId: String) {
+    private fun findStudentByCourseId(courseId: String, courseName: String) {
         val db = Firebase.firestore
         db.collection("CourseSelection").whereEqualTo("course_id", courseId).get()
             .addOnSuccessListener { result ->
@@ -143,14 +148,19 @@ class StudentActivity : AppCompatActivity() {
                     val data = document.data
                     emailList.add(data["email"].toString())
                 }
-                findAllStudent(emailList)
+                findAllStudent(emailList, courseId, courseName)
             }.addOnFailureListener { e ->
                 Log.w(ContentValues.TAG, "Error adding document", e)
             }
     }
 
     private fun addStudentCheckBox(
-        email1: String, email2: String, haveEmail1: Boolean, haveEmail2: Boolean
+        email1: String,
+        email2: String,
+        haveEmail1: Boolean,
+        haveEmail2: Boolean,
+        courseId: String,
+        courseName: String
     ) {
         val tablelayout = findViewById<TableLayout>(R.id.tablelayout)
         val tableRow = TableRow(this)
@@ -165,13 +175,29 @@ class StudentActivity : AppCompatActivity() {
         if (haveEmail1) {
             checkbox1.isChecked = true
             checkbox1.isEnabled = false
+            textview1.setOnClickListener {
+                val email = (it as TextView).text
+                val intent = Intent(this, ActivityList::class.java)
+                intent.putExtra("student_email", email)
+                intent.putExtra("course_id", courseId)
+                intent.putExtra("course_name", courseName)
+                intent.putExtra("isEducator", true)
+                startActivity(intent)
+            }
         }
         if (haveEmail2) {
             checkbox2.isChecked = true
             checkbox2.isEnabled = false
+            textview2.setOnClickListener {
+                val email = (it as TextView).text
+                val intent = Intent(this, ActivityList::class.java)
+                intent.putExtra("student_email", email)
+                intent.putExtra("course_id", courseId)
+                intent.putExtra("course_name", courseName)
+                intent.putExtra("isEducator", true)
+                startActivity(intent)
+            }
         }
-//        textview1.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20f)
-//        textview2.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20f)
         linearLayout1.addView(checkbox1)
         linearLayout1.addView(textview1)
         tableRow.addView(linearLayout1)

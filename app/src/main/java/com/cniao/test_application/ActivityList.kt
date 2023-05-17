@@ -28,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.android.synthetic.main.activity_detail.activityName
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -42,15 +43,21 @@ class ActivityList : AppCompatActivity() {
         setContentView(R.layout.activity_list)
         val courseId = intent.getStringExtra("course_id").toString()
         val courseName = intent.getStringExtra("course_name").toString()
+        val studentEmail = intent.getStringExtra("student_email").toString()
         isEducator = intent.getBooleanExtra("isEducator", false)
-        if (!isEducator) {
+        if (!isEducator || studentEmail != "null") {
             findViewById<Button>(R.id.addActivity).visibility = View.INVISIBLE
         }
         findViewById<TextView>(R.id.courseName).text = courseName
         findViewById<Button>(R.id.addActivity).setOnClickListener {
             addActivityDialog(courseId)
         }
-        findActivityByCourseId(courseId)
+        if (studentEmail == "null") {
+            findActivityByCourseId(courseId, studentEmail)
+        } else if (isEducator && studentEmail != "null") {
+            findActivityByEmail(courseId, studentEmail)
+        }
+
         supportActionBar?.title = "Activity List"
 
     }
@@ -61,7 +68,7 @@ class ActivityList : AppCompatActivity() {
         ).toInt()
     }
 
-    private fun findActivityByCourseId(id: String) {
+    private fun findActivityByCourseId(id: String, studentEmail: String) {
         val db = Firebase.firestore
         db.collection("Activity").whereEqualTo("course_id", id)
 //            .orderBy("available_time")
@@ -72,7 +79,7 @@ class ActivityList : AppCompatActivity() {
                     addActivityLayout(
                         Activity(
                             document.id, id, data["activity_name"].toString(), date.toDate()
-                        )
+                        ), studentEmail
                     )
                 }
             }.addOnFailureListener { exception ->
@@ -80,7 +87,47 @@ class ActivityList : AppCompatActivity() {
             }
     }
 
-    private fun addActivityLayout(activity: Activity) {
+    private fun findActivityByEmail(id: String, studentEmail: String) {
+        val db = Firebase.firestore
+        db.collection("Result").whereEqualTo("email", studentEmail).get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    val data = document.data
+                    val date = data["available_time"] as Timestamp
+                    addActivityLayout(
+                        Activity(
+                            data["activity_id"].toString(),
+                            id,
+                            data["activity_name"].toString(),
+                            date.toDate()
+                        ), studentEmail
+                    )
+                }
+            }.addOnFailureListener { exception ->
+                Log.w(ContentValues.TAG, "Error getting documents.", exception)
+            }
+    }
+
+//    private fun findActivityByEmail(id: String) {
+//        val db = Firebase.firestore
+//        db.collection("Activity").whereEqualTo("course_id", id)
+////            .orderBy("available_time")
+//            .get().addOnSuccessListener { result ->
+//                for (document in result) {
+//                    val data = document.data
+//                    val date = data["available_time"] as Timestamp
+//                    addActivityLayout(
+//                        Activity(
+//                            document.id, id, data["activity_name"].toString(), date.toDate()
+//                        )
+//                    )
+//                }
+//            }.addOnFailureListener { exception ->
+//                Log.w(ContentValues.TAG, "Error getting documents.", exception)
+//            }
+//    }
+
+    private fun addActivityLayout(activity: Activity, studentEmail: String) {
         val view = this.findViewById<LinearLayout>(R.id.linearLayout)
         val layout = LinearLayout(this)
         val layoutLp = LinearLayout.LayoutParams(
@@ -102,30 +149,38 @@ class ActivityList : AppCompatActivity() {
         textView.layoutParams = textViewLp
         textView.setBackgroundColor(Color.LTGRAY)
         textView.setOnClickListener {
-            val user = FirebaseAuth.getInstance().currentUser
-            if (isEducator) {
+            if (isEducator && studentEmail == "null") {
                 val intent = Intent(this, ActivityDetail::class.java).putExtra(
                     "activity_id", activity.id
                 ).putExtra("activity_name", activity.activity_name)
                     .putExtra("available_time", datetime)
                 startActivity(intent)
             } else {
-                exam(activity.id.toString())
+                exam(activity.id.toString(), activity.activity_name, datetime, studentEmail)
             }
         }
         layout.addView(textView)
         view.addView(layout)
     }
 
-    private fun exam(activityId: String) {
-        val email = FirebaseAuth.getInstance().currentUser?.email.toString()
+    private fun exam(
+        activityId: String,
+        activityName: String,
+        availableTime: String,
+        studentEmail: String
+    ) {
+        var email = FirebaseAuth.getInstance().currentUser?.email.toString()
+        if (isEducator) {
+            email = studentEmail
+        }
         val db = Firebase.firestore
         val ref = db.collection("Result").document(activityId).collection(email)
         ref.get().addOnSuccessListener { result ->
             if (result.documents.size == 0) {
-                val intent = Intent(this, QuizActivity::class.java).putExtra(
-                    "activityName", activityId
-                ).putExtra("userEmail", email)
+                val intent =
+                    Intent(this, QuizActivity::class.java).putExtra("activity_id", activityId)
+                        .putExtra("userEmail", email).putExtra("activity_name", activityName)
+                        .putExtra("available_time", availableTime)
                 startActivity(intent)
             } else {
                 val intent = Intent(this, QuizResultActivity::class.java).putExtra(
