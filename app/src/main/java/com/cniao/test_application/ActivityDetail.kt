@@ -56,7 +56,6 @@ class ActivityDetail : AppCompatActivity() {
                             document.id,
                             id,
                             data["description"].toString(),
-                            data["number"].toString()
                         )
                     )
                 }

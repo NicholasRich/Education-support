@@ -7,6 +7,4 @@ data class Question(
     val id: String? = null,
     val activity_id: String,
     val description: String,
-    val number: String,
-    val result: Boolean? = null,
 ) : Serializable
