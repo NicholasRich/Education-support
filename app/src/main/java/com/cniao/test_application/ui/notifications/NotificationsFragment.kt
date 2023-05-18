@@ -117,8 +117,7 @@ class NotificationsFragment : Fragment() {
             val intent =
                 Intent(requireActivity(), ActivityList::class.java).putExtra("course_id", course.id)
                     .putExtra("course_name", course.course_name)
-                    .putExtra("edu_email", course.edu_email)
-                    .putExtra("isEducator", isEducator)
+                    .putExtra("edu_email", course.edu_email).putExtra("isEducator", isEducator)
             startActivity(intent)
         }
         layout.addView(textView)
@@ -169,8 +168,8 @@ class NotificationsFragment : Fragment() {
     private fun findCourseByEduEmail() {
         val user = FirebaseAuth.getInstance().currentUser
         val db = Firebase.firestore
-        db.collection("Course").whereEqualTo("edu_email", user!!.email.toString())
-            .orderBy("add_time", Query.Direction.DESCENDING).get().addOnSuccessListener { result ->
+        db.collection("Course").whereEqualTo("edu_email", user!!.email.toString()).get()
+            .addOnSuccessListener { result ->
                 for (document in result) {
                     val data = document.data
                     addCourseLayout(

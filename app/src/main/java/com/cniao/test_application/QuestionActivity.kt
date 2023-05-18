@@ -31,23 +31,13 @@ class QuestionActivity : AppCompatActivity() {
         val number = intent.getStringExtra("number").toString()
         val questionId = intent.getStringExtra("question_id").toString()
         if (questionId == "null") {
-//            findViewById<FloatingActionButton>(R.id.addAnswer)
-//                .setOnClickListener {
-//                    addAnswerLayout(null)
-//                }
             findViewById<Button>(R.id.submit).setOnClickListener {
                 if (validate()) {
                     submit(id, activityName, availableTime, number)
                 }
             }
         } else {
-//            val layout2 = findViewById<LinearLayout>(R.id.linearLayout2)
-//            val layout3 = findViewById<LinearLayout>(R.id.linearLayout3)
-//            val button1 = findViewById<FloatingActionButton>(R.id.addAnswer)
             val button2 = findViewById<Button>(R.id.submit)
-//            (layout2.parent as ViewGroup).removeView(layout2)
-//            (layout3.parent as ViewGroup).removeView(layout3)
-//            button1.isVisible = false
             button2.isVisible = false
             findQuestionById(questionId)
             findAnswerByQuestionId(questionId)
