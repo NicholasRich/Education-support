@@ -108,25 +108,6 @@ class ActivityList : AppCompatActivity() {
             }
     }
 
-//    private fun findActivityByEmail(id: String) {
-//        val db = Firebase.firestore
-//        db.collection("Activity").whereEqualTo("course_id", id)
-////            .orderBy("available_time")
-//            .get().addOnSuccessListener { result ->
-//                for (document in result) {
-//                    val data = document.data
-//                    val date = data["available_time"] as Timestamp
-//                    addActivityLayout(
-//                        Activity(
-//                            document.id, id, data["activity_name"].toString(), date.toDate()
-//                        )
-//                    )
-//                }
-//            }.addOnFailureListener { exception ->
-//                Log.w(ContentValues.TAG, "Error getting documents.", exception)
-//            }
-//    }
-
     private fun addActivityLayout(activity: Activity, studentEmail: String) {
         val view = this.findViewById<LinearLayout>(R.id.linearLayout)
         val layout = LinearLayout(this)
